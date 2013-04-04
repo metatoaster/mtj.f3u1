@@ -4,9 +4,9 @@ import unittest2 as unittest
 from mtj.f3u1.timedelta import format_timedelta
 
 
-class FormatTimeDeltaTestCase(unittest.TestCase):
+class FormatTimeHourTestCase(unittest.TestCase):
     """
-    Unit tests for the basic structures.
+    Unit tests for the original hour-based requirements.
     """
 
     def test_0000_format_timedelta(self):
@@ -53,10 +53,8 @@ class FormatTimeDeltaTestCase(unittest.TestCase):
         self.assertEqual(format_timedelta(seconds=1, resolution='hour'),
             '0 hours')
 
-        # negative values of all types very undefined (:aaaaa:)
-
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(FormatTimeDeltaTestCase))
+    suite.addTest(unittest.makeSuite(FormatTimeHourTestCase))
     return suite
