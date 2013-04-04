@@ -58,3 +58,10 @@ to string formatting functions, and is constructed using a function that
 is generic to this specific use case.  The target is to cover the most
 basic cases in the name of simplicity, and leave the difficult/advanced
 cases to other libraries that might do the same thing.
+
+How?
+====
+
+Right now not much is really documented outside of the test cases, but
+to toy with this you can clone this repository, instantiate a
+virtualenv, and use pip to install with the requirements.txt.
