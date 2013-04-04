@@ -4,6 +4,38 @@ import unittest2 as unittest
 from mtj.f3u1.timedelta import format_timedelta
 
 
+class FormatTimedeltaTestCase(unittest.TestCase):
+    """
+    Unit tests for the original hour-based requirements.
+    """
+
+    def test_nothing(self):
+        self.assertEqual(format_timedelta(0), '0 seconds')
+
+    def test_singular(self):
+        self.assertEqual(format_timedelta(1), '1 second')
+
+    def test_plural(self):
+        self.assertEqual(format_timedelta(2), '2 seconds')
+
+    def test_almost_next(self):
+        self.assertEqual(format_timedelta(59), '59 seconds')
+
+    def test_minute(self):
+        self.assertEqual(format_timedelta(60), '1 minute')
+
+    def test_minute_plusone(self):
+        self.assertEqual(format_timedelta(61), '1 minute, 1 second')
+
+    def test_day_minusone(self):
+        self.assertEqual(format_timedelta(86399),
+            '23 hours, 59 minutes, 59 seconds')
+
+    def test_day_pluseone(self):
+        self.assertEqual(format_timedelta(86401),
+            '1 day, 1 second')
+
+
 class FormatTimeHourTestCase(unittest.TestCase):
     """
     Unit tests for the original hour-based requirements.
@@ -56,5 +88,6 @@ class FormatTimeHourTestCase(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(FormatTimedeltaTestCase))
     suite.addTest(unittest.makeSuite(FormatTimeHourTestCase))
     return suite
