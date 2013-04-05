@@ -68,3 +68,8 @@ class OrderedUnitGroup(object):
             last = units_factory(higher_unit=last, **kw)
             setattr(self, kw['subject'], last)
             setattr(self, kw['plural'], last)
+
+    # TODO make this callable, or heck, another factory that will return
+    # an object that will let user have a more friendlier way to
+    # fine-tune their desired input (specifying all the units) and then
+    # control the output to be some kind of string.
