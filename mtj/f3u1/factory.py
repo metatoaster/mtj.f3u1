@@ -51,7 +51,7 @@ def units_factory(subject, size, higher_unit=None, plural=None,
     return unit_method
 
 
-class OrderedUnitGroup(object):
+class UnitGroup(object):
     """
     Instances of this class is constructed using a list of definitions
     for a set of related, regular units (in decreasing order) and
