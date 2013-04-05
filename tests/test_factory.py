@@ -1,7 +1,7 @@
 from datetime import timedelta
 import unittest2 as unittest
 
-from mtj.f3u1.factory import units_factory
+from mtj.f3u1.factory import units_factory, UnitGroup
 
 
 class FactoryTestCase(unittest.TestCase):
@@ -56,6 +56,37 @@ class FactoryTestCase(unittest.TestCase):
 
         self.assertEqual(unit(10), ['0 hundred', '1 ten', '0 unit'])
         self.assertEqual(ten(10), ['0 hundred', '1 ten'])
+
+
+class UnitGroupTestCase(unittest.TestCase):
+    """
+    Unit tests for the UnitGroup class.
+    """
+
+    def test_original_invoke(self):
+        timeug = UnitGroup(
+            {'subject': 'day', 'size': 86400, 'plural': 'days'},
+            {'subject': 'hour', 'size': 3600, 'plural': 'hours'},
+            {'subject': 'minute', 'size': 60, 'plural': 'minutes'},
+            {'subject': 'second', 'size': 1, 'plural': 'seconds'},
+        )
+        self.assertEqual(timeug.hour(86461), ['1 day'])
+        self.assertEqual(timeug.hour(90061), ['1 day', '1 hour'])
+        self.assertEqual(timeug.minute(90061), ['1 day', '1 hour', '1 minute'])
+
+    def test_keyword_invoke(self):
+        timeug = UnitGroup(
+            week={'size': 604800, 'plural': 'weeks'},
+            day={'size': 86400, 'plural': 'days'},
+            minute={'size': 60, 'plural': 'minutes'},
+            hour={'size': 3600, 'plural': 'hours'},
+            second={'size': 1, 'plural': 'seconds'},
+        )
+        self.assertEqual(timeug.hour(86461), ['1 day'])
+        self.assertEqual(timeug.hour(90061), ['1 day', '1 hour'])
+        self.assertEqual(timeug.week(90061), ['0 weeks'])
+        self.assertEqual(timeug.second(1940464),
+            ['3 weeks', '1 day', '11 hours', '1 minute', '4 seconds'])
 
 
 def test_suite():
