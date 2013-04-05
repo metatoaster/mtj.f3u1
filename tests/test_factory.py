@@ -63,24 +63,22 @@ class UnitGroupTestCase(unittest.TestCase):
     Unit tests for the UnitGroup class.
     """
 
-    def test_original_invoke(self):
+    def test_construction(self):
         timeug = UnitGroup(
-            {'subject': 'day', 'size': 86400, 'plural': 'days'},
-            {'subject': 'hour', 'size': 3600, 'plural': 'hours'},
-            {'subject': 'minute', 'size': 60, 'plural': 'minutes'},
-            {'subject': 'second', 'size': 1, 'plural': 'seconds'},
-        )
-        self.assertEqual(timeug.hour(86461), ['1 day'])
-        self.assertEqual(timeug.hour(90061), ['1 day', '1 hour'])
-        self.assertEqual(timeug.minute(90061), ['1 day', '1 hour', '1 minute'])
-
-    def test_keyword_invoke(self):
-        timeug = UnitGroup(
-            week={'size': 604800, 'plural': 'weeks'},
-            day={'size': 86400, 'plural': 'days'},
-            minute={'size': 60, 'plural': 'minutes'},
-            hour={'size': 3600, 'plural': 'hours'},
-            second={'size': 1, 'plural': 'seconds'},
+            units={
+                'week': 604800,
+                'day': 86400,
+                'hour': 3600,
+                'minute': 60,
+                'second': 1,
+            },
+            plurals={
+                'week': 'weeks',
+                'day': 'days',
+                'minute': 'minutes',
+                'hour': 'hours',
+                'second': 'seconds',
+            }
         )
         self.assertEqual(timeug.hour(86461), ['1 day'])
         self.assertEqual(timeug.hour(90061), ['1 day', '1 hour'])

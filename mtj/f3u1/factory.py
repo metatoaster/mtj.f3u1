@@ -62,25 +62,22 @@ class UnitGroup(object):
     See the accompanied units module for more examples.
     """
 
-    def __init__(self, *a, **kw):
-        self._coredef = {}
-        self._coredef.update(kw)
-        for items in a:
-            # XXX side effect: this will alter input values.
-            subject = items.pop('subject')
-            self._coredef[subject] = items
-
+    def __init__(self, units, plurals=None):
+        self._units = units
+        self._plurals = plurals or {}
         self._initialize()
 
     def _initialize(self):
-        builddef = sorted(self._coredef.items(),
-            cmp=lambda x, y: cmp(y[1]['size'], x[1]['size']))
+        builddef = sorted(self._units.items(),
+            cmp=lambda x, y: cmp(y[1], x[1]))
 
         last = None
-        for subject, items in builddef:
-            last = units_factory(subject, higher_unit=last, **items)
+        for subject, size in builddef:
+            plural = self._plurals.get(subject, subject)
+            last = units_factory(subject, size=size, higher_unit=last,
+                plural=plural)
             setattr(self, subject, last)
-            setattr(self, items['plural'], last)
+            setattr(self, plural, last)
 
     # TODO make this callable, or heck, another factory that will return
     # an object that will let user have a more friendlier way to

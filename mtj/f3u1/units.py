@@ -1,23 +1,37 @@
 from mtj.f3u1.factory import UnitGroup
 
+_plurals = {
+    'day': 'days',
+    'hour': 'hours',
+    'minute': 'minutes',
+    'second': 'seconds',
+    'mile': 'miles',
+    'yard': 'yards',
+    'foot': 'feet',
+    'inch': 'inches',
+    'ton': 'tons',
+    'stone': 'stones',
+    'pound': 'pounds',
+    'ounce': 'ounces',
+}
 
-Time = UnitGroup(
-    {'subject': 'day', 'size': 86400, 'plural': 'days'},
-    {'subject': 'hour', 'size': 3600, 'plural': 'hours'},
-    {'subject': 'minute', 'size': 60, 'plural': 'minutes'},
-    {'subject': 'second', 'size': 1, 'plural': 'seconds'},
-)
+Time = UnitGroup(plurals=_plurals, units={
+    'day': 86400,
+    'hour': 3600,
+    'minute': 60,
+    'second': 1,
+})
 
-ImperialLength = UnitGroup(
-    {'subject': 'mile', 'size': 63360, 'plural': 'miles'},
-    {'subject': 'yard', 'size': 36, 'plural': 'yards'},
-    {'subject': 'foot', 'size': 12, 'plural': 'feet'},
-    {'subject': 'inch', 'size': 1, 'plural': 'inches'},
-)
+ImperialLength = UnitGroup(plurals=_plurals, units={
+    'mile': 63360,
+    'yard': 36,
+    'foot': 12,
+    'inch': 1,
+})
 
-ImperialWeight = UnitGroup(
-    {'subject': 'ton', 'size': 35840, 'plural': 'tons'},
-    {'subject': 'stone', 'size': 224, 'plural': 'stones'},
-    {'subject': 'pound', 'size': 16, 'plural': 'pounds'},
-    {'subject': 'ounce', 'size': 1, 'plural': 'ounces'},
-)
+ImperialWeight = UnitGroup(plurals=_plurals, units={
+    'ton': 35840,
+    'stone': 224,
+    'pound': 16,
+    'ounce': 1,
+})
