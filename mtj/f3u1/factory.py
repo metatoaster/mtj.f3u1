@@ -1,15 +1,16 @@
 from sys import maxint
 
-def units_factory(subject, size, higher_unit=None, plural=None):
+def units_factory(subject, size, higher_unit=None, plural=None,
+        omissible=False, higher_omissible=True):
 
     assert higher_unit is None or callable(higher_unit)
 
     if plural is None:
         plural = subject
 
-    def _method(value, omissible=False):
+    def _method(value, omissible=omissible):
         if higher_unit:
-            result = higher_unit(value, omissible=True)
+            result = higher_unit(value, omissible=higher_omissible)
             higher_size = higher_unit.size
         else:
             result = []
@@ -35,3 +36,4 @@ class OrderedUnitGroup(object):
         for kw in a:
             last = units_factory(higher_unit=last, **kw)
             setattr(self, kw['subject'], last)
+            setattr(self, kw['plural'], last)
