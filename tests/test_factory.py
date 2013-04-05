@@ -64,13 +64,12 @@ class UnitGroupTestCase(unittest.TestCase):
     """
 
     def test_construction(self):
-        timeug = UnitGroup(
-            units={
+        timeug = UnitGroup(base_unit='second',
+            ratios={
                 'week': 604800,
                 'day': 86400,
                 'hour': 3600,
                 'minute': 60,
-                'second': 1,
             },
             plurals={
                 'week': 'weeks',
@@ -80,10 +79,10 @@ class UnitGroupTestCase(unittest.TestCase):
                 'second': 'seconds',
             }
         )
-        self.assertEqual(timeug.hour(86461), ['1 day'])
-        self.assertEqual(timeug.hour(90061), ['1 day', '1 hour'])
-        self.assertEqual(timeug.week(90061), ['0 weeks'])
-        self.assertEqual(timeug.second(1940464),
+        self.assertEqual(timeug.units['hour'](86461), ['1 day'])
+        self.assertEqual(timeug.units['hours'](90061), ['1 day', '1 hour'])
+        self.assertEqual(timeug.units['week'](90061), ['0 weeks'])
+        self.assertEqual(timeug.units['second'](1940464),
             ['3 weeks', '1 day', '11 hours', '1 minute', '4 seconds'])
 
 

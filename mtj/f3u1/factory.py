@@ -51,6 +51,12 @@ def units_factory(subject, size, higher_unit=None, plural=None,
     return unit_method
 
 
+class UnitGroupAttr(object):
+    def __init__(self, unit_group):
+        for k, v in unit_group.units.iteritems():
+            setattr(self, k, v)
+
+
 class UnitGroup(object):
     """
     Instances of this class is constructed using a list of definitions
@@ -62,22 +68,33 @@ class UnitGroup(object):
     See the accompanied units module for more examples.
     """
 
-    def __init__(self, units, plurals=None):
-        self._units = units
-        self._plurals = plurals or {}
-        self._initialize()
+    def __init__(self, base_unit, ratios, plurals=None):
+        self.base_unit = base_unit
 
-    def _initialize(self):
-        builddef = sorted(self._units.items(),
+        self.ratios = {}
+        self.ratios.update(ratios)
+        self.ratios[base_unit] = 1
+
+        self.plurals = plurals or {}
+
+        self.units = {}
+        self.initialize()
+
+    def initialize(self):
+        self.units = {}
+        builddef = sorted(self.ratios.items(),
             cmp=lambda x, y: cmp(y[1], x[1]))
 
         last = None
         for subject, size in builddef:
-            plural = self._plurals.get(subject, subject)
+            plural = self.plurals.get(subject, subject)
             last = units_factory(subject, size=size, higher_unit=last,
                 plural=plural)
-            setattr(self, subject, last)
-            setattr(self, plural, last)
+            self.units[subject] = last
+            self.units[plural] = last
+
+    def as_attrs(self):
+        return UnitGroupAttr(self)
 
     # TODO make this callable, or heck, another factory that will return
     # an object that will let user have a more friendlier way to
