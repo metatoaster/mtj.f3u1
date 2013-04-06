@@ -30,9 +30,10 @@ def units_factory(subject, size, higher_unit=None, plural=None,
     if plural is None:
         plural = subject
 
-    def unit_method(value, omissible=omissible):
+    def unit_method(value, omissible=omissible, with_remainder=False):
         if higher_unit:
-            result = higher_unit(value, omissible=True)
+            result, value = higher_unit(value, omissible=True,
+                with_remainder=True)
             higher_size = higher_unit.size
         else:
             result = []
@@ -44,6 +45,9 @@ def units_factory(subject, size, higher_unit=None, plural=None,
                 not (omissible or result)):
             result.append('%d %s' % (derived,
                 derived == 1 and subject or plural))
+
+        if with_remainder:
+            return result, remainder
         return result
 
     unit_method.__name__ = subject

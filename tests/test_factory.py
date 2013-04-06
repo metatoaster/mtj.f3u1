@@ -57,6 +57,32 @@ class FactoryTestCase(unittest.TestCase):
         self.assertEqual(unit(10), ['0 hundred', '1 ten', '0 unit'])
         self.assertEqual(ten(10), ['0 hundred', '1 ten'])
 
+    def test_factory_higher_irregular(self):
+        gross = units_factory('gross', 144)
+        hundred = units_factory('hundred', 100, higher_unit=gross)
+        dozen = units_factory('dozen', 12, higher_unit=hundred)
+        ten = units_factory('ten', 10, higher_unit=dozen)
+        unit = units_factory('unit', 1, higher_unit=ten)
+
+        self.assertEqual(unit(9), ['9 unit'])
+        self.assertEqual(unit(10), ['1 ten'])
+        self.assertEqual(unit(12), ['1 dozen'])
+        self.assertEqual(unit(23), ['1 dozen', '1 ten', '1 unit'])
+        self.assertEqual(unit(24), ['2 dozen'])
+        self.assertEqual(unit(26), ['2 dozen', '2 unit'])
+        self.assertEqual(unit(99), ['8 dozen', '3 unit'])
+        self.assertEqual(unit(100), ['1 hundred'])
+        self.assertEqual(unit(111), ['1 hundred', '1 ten', '1 unit'])
+        self.assertEqual(unit(112), ['1 hundred', '1 dozen'])
+        self.assertEqual(unit(143), ['1 hundred', '3 dozen', '7 unit'])
+        self.assertEqual(unit(144), ['1 gross'])
+        self.assertEqual(unit(150), ['1 gross', '6 unit'])
+        self.assertEqual(unit(155), ['1 gross', '1 ten', '1 unit'])
+        self.assertEqual(unit(156), ['1 gross', '1 dozen'])
+        self.assertEqual(unit(287),
+            ['1 gross', '1 hundred', '3 dozen', '7 unit'])
+        self.assertEqual(unit(288), ['2 gross'])
+
 
 class UnitGroupTestCase(unittest.TestCase):
     """
