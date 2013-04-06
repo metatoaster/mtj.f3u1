@@ -86,16 +86,51 @@ class UnitGroup(object):
 
     def initialize(self):
         self.units = {}
-        builddef = sorted(self.ratios.items(),
-            cmp=lambda x, y: cmp(y[1], x[1]))
+        build = sorted(self.ratios.items(), cmp=lambda x, y: cmp(y[1], x[1]))
 
         last = None
-        for subject, size in builddef:
+        for subject, size in build:
             plural = self.plurals.get(subject, subject)
             last = units_factory(subject, size=size, higher_unit=last,
                 plural=plural)
             self.units[subject] = last
             self.units[plural] = last
+
+    def respecify(self, ratios=None, plurals=None, keep_only=None, drop=None):
+        """
+        Returns a new UnitGroup object building up on this current one.
+
+        ratios
+            additional or updated ratios.
+        plurals
+            additional or updated plurals.
+        keep_only
+            a set of units to keep for the new object.
+        omit
+            a list of units to omit for the new object.
+        """
+
+        def newdict(*values):
+            result = {}
+            for v in values:
+                if v:
+                    result.update(v)
+            return result
+
+        new_ratios = newdict(self.ratios, ratios)
+        new_plurals = newdict(self.plurals, plurals)
+
+        if keep_only:
+            keys = new_ratios.keys()
+            for k in keys:
+                if k not in keep_only:
+                    new_ratios.pop(k, None)
+
+        if drop:
+            for d in drop:
+                new_ratios.pop(d, None)
+
+        return UnitGroup(self.base_unit, new_ratios, new_plurals)
 
     def as_attrs(self):
         return UnitGroupAttr(self)

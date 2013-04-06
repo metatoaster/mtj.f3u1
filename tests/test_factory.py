@@ -2,6 +2,7 @@ from datetime import timedelta
 import unittest2 as unittest
 
 from mtj.f3u1.factory import units_factory, UnitGroup
+from mtj.f3u1.units import _plurals
 
 
 class FactoryTestCase(unittest.TestCase):
@@ -89,21 +90,19 @@ class UnitGroupTestCase(unittest.TestCase):
     Unit tests for the UnitGroup class.
     """
 
+    def setUp(self):
+        self.time_ratios = {
+            'week': 604800,
+            'day': 86400,
+            'hour': 3600,
+            'minute': 60,
+        }
+        self.plurals = {'week': 'weeks', 'month': 'months'}
+        self.plurals.update(_plurals)
+
     def test_construction(self):
-        timeug = UnitGroup(base_unit='second',
-            ratios={
-                'week': 604800,
-                'day': 86400,
-                'hour': 3600,
-                'minute': 60,
-            },
-            plurals={
-                'week': 'weeks',
-                'day': 'days',
-                'minute': 'minutes',
-                'hour': 'hours',
-                'second': 'seconds',
-            }
+        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
+            plurals=self.plurals,
         )
         self.assertEqual(timeug.units['hour'](86461), ['1 day'])
         self.assertEqual(timeug.units['hours'](90061), ['1 day', '1 hour'])
@@ -111,8 +110,84 @@ class UnitGroupTestCase(unittest.TestCase):
         self.assertEqual(timeug.units['second'](1940464),
             ['3 weeks', '1 day', '11 hours', '1 minute', '4 seconds'])
 
+    def test_construction_baseunit_redefinition_omitted(self):
+        ug = UnitGroup(base_unit='second', ratios={
+                'hour': 3600,
+                'second': 60,
+            },
+            plurals=self.plurals,
+        )
+        self.assertEqual(ug.units['second'](71), ['71 seconds'])
+
+        # To show the difference
+        ug = UnitGroup(base_unit='nope', ratios={
+                'hour': 3600,
+                'second': 60,
+            },
+            plurals=self.plurals,
+        )
+        self.assertEqual(ug.units['nope'](71), ['1 second', '11 nope'])
+
+    def test_respecify_new_ratio(self):
+        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
+            plurals=self.plurals,
+        )
+        # original
+        self.assertEqual(timeug.units['second'](9954862),
+            ['16 weeks', '3 days', '5 hours', '14 minutes', '22 seconds'])
+        self.assertEqual(timeug.units['second'](2592000),
+            ['4 weeks', '2 days'])
+        self.assertEqual(timeug.units['second'](3196800),
+            ['5 weeks', '2 days'])
+        self.assertEqual(timeug.units['second'](7775940),
+            ['12 weeks', '5 days', '23 hours', '59 minutes'])
+
+        monthug = timeug.respecify({'month': 2592000})
+        self.assertEqual(monthug.units['second'](2592000),
+            ['1 month'])
+        self.assertEqual(monthug.units['second'](3196800),
+            ['1 month', '1 week'])
+        self.assertEqual(monthug.units['second'](7775940),
+            ['2 months', '4 weeks', '1 day', '23 hours', '59 minutes'])
+
+    def test_respecify_new_ratio_keep(self):
+        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
+            plurals=self.plurals,
+        )
+        # can't filter base units out.
+        monthug = timeug.respecify({'month': 2592000}, keep_only=['month'])
+        self.assertEqual(monthug.units['second'](2592000),
+            ['1 month'])
+        self.assertEqual(monthug.units['second'](3196800),
+            ['1 month', '604800 seconds'])
+
+    def test_respecify_drop(self):
+        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
+            plurals=self.plurals,
+        )
+        # can't drop base units.
+        monthug = timeug.respecify({'month': 2592000}, drop=['week', 'second'])
+        self.assertEqual(sorted(monthug.ratios.keys()),
+            ['day', 'hour', 'minute', 'month', 'second'])
+        self.assertEqual(monthug.units['second'](2592000),
+            ['1 month'])
+        self.assertEqual(monthug.units['second'](3196801),
+            ['1 month', '7 days', '1 second'])
+
+    def test_respecify_new_ratio_and_drop(self):
+        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
+            plurals=self.plurals,
+        )
+        # can't filter base units out.
+        monthug = timeug.respecify({'month': 2592000}, keep_only=['month'],
+            drop=['month'])
+        self.assertEqual(sorted(monthug.ratios.keys()), ['second'])
+        self.assertEqual(monthug.units['second'](2592000),
+            ['2592000 seconds'])
+
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(FactoryTestCase))
+    suite.addTest(unittest.makeSuite(UnitGroupTestCase))
     return suite
