@@ -2,7 +2,6 @@ from datetime import timedelta
 import unittest2 as unittest
 
 from mtj.f3u1.factory import units_factory, UnitGroup
-from mtj.f3u1.units import _plurals
 
 
 class FactoryTestCase(unittest.TestCase):
@@ -16,13 +15,13 @@ class FactoryTestCase(unittest.TestCase):
     def test_factory_normal(self):
         unit = units_factory('unit', 1)
         self.assertEqual(unit(0), [('unit', 0)])
-        unit = units_factory('unit', 1, plural='unit')
+        unit = units_factory('unit', 1)
         self.assertEqual(unit(0), [('unit', 0)])
         self.assertEqual(unit(1), [('unit', 1)])
 
     def test_factory_chained(self):
-        ten = units_factory('ten', 10, plural='ten')
-        unit = units_factory('unit', 1, higher_unit=ten, plural='unit')
+        ten = units_factory('ten', 10)
+        unit = units_factory('unit', 1, higher_unit=ten)
         self.assertEqual(unit(0), [('unit', 0)])
         self.assertEqual(unit(9), [('unit', 9)])
         self.assertEqual(ten(9), [('ten', 0)])
@@ -97,13 +96,9 @@ class UnitGroupTestCase(unittest.TestCase):
             'hour': 3600,
             'minute': 60,
         }
-        self.plurals = {'week': 'week', 'month': 'month'}
-        self.plurals.update(_plurals)
 
     def test_construction(self):
-        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
-            plurals=self.plurals,
-        )
+        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios)
         self.assertEqual(timeug.units['hour'](86461), [('day', 1)])
         self.assertEqual(timeug.units['hour'](90061), [('day', 1), ('hour', 1)])
         self.assertEqual(timeug.units['week'](90061), [('week', 0)])
@@ -112,26 +107,16 @@ class UnitGroupTestCase(unittest.TestCase):
 
     def test_construction_baseunit_redefinition_omitted(self):
         ug = UnitGroup(base_unit='second', ratios={
-                'hour': 3600,
-                'second': 60,
-            },
-            plurals=self.plurals,
-        )
+            'hour': 3600, 'second': 60,})
         self.assertEqual(ug.units['second'](71), [('second', 71)])
 
         # To show the difference
         ug = UnitGroup(base_unit='nope', ratios={
-                'hour': 3600,
-                'second': 60,
-            },
-            plurals=self.plurals,
-        )
+            'hour': 3600, 'second': 60,})
         self.assertEqual(ug.units['nope'](71), [('second', 1), ('nope', 11)])
 
     def test_respecify_new_ratio(self):
-        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
-            plurals=self.plurals,
-        )
+        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios)
         # original
         self.assertEqual(timeug.units['second'](9954862),
             [('week', 16), ('day', 3), ('hour', 5), ('minute', 14), ('second', 22)])
@@ -151,9 +136,7 @@ class UnitGroupTestCase(unittest.TestCase):
             [('month', 2), ('week', 4), ('day', 1), ('hour', 23), ('minute', 59)])
 
     def test_respecify_new_ratio_keep(self):
-        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
-            plurals=self.plurals,
-        )
+        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios)
         # can't filter base units out.
         monthug = timeug.respecify({'month': 2592000}, keep_only=['month'])
         self.assertEqual(monthug.units['second'](2592000),
@@ -162,9 +145,7 @@ class UnitGroupTestCase(unittest.TestCase):
             [('month', 1), ('second', 604800)])
 
     def test_respecify_drop(self):
-        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
-            plurals=self.plurals,
-        )
+        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios)
         # can't drop base units.
         monthug = timeug.respecify({'month': 2592000}, drop=['week', 'second'])
         self.assertEqual(sorted(monthug.ratios.keys()),
@@ -175,9 +156,7 @@ class UnitGroupTestCase(unittest.TestCase):
             [('month', 1), ('day', 7), ('second', 1)])
 
     def test_respecify_new_ratio_and_drop(self):
-        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
-            plurals=self.plurals,
-        )
+        timeug = UnitGroup(base_unit='second', ratios=self.time_ratios)
         # can't filter base units out.
         monthug = timeug.respecify({'month': 2592000}, keep_only=['month'],
             drop=['month'])

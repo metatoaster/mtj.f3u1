@@ -1,6 +1,6 @@
 from sys import maxint
 
-def units_factory(subject, size, higher_unit=None, plural=None,
+def units_factory(subject, size, higher_unit=None,
         omissible=False, force_render=False):
     """
     A function that returns a function that will format a number with its
@@ -15,8 +15,6 @@ def units_factory(subject, size, higher_unit=None, plural=None,
     higher_unit
         A function generated using this method that represents the next
         higher unit of measurement for this unit type.
-    plural
-        The plural form of the name of this unit.
     omissible
         Whether this output is omissible if the size is 0.
         Default is False.
@@ -26,9 +24,6 @@ def units_factory(subject, size, higher_unit=None, plural=None,
     """
 
     assert higher_unit is None or callable(higher_unit)
-
-    if plural is None:
-        plural = subject
 
     def unit_method(value, omissible=omissible, with_remainder=False):
         if higher_unit:
@@ -90,8 +85,7 @@ class UnitGroup(object):
         last = None
         for subject, size in build:
             plural = self.plurals.get(subject, subject)
-            last = units_factory(subject, size=size, higher_unit=last,
-                plural=plural)
+            last = units_factory(subject, size=size, higher_unit=last)
             self.units[subject] = last
             self.units[plural] = last
 
