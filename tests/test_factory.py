@@ -15,48 +15,48 @@ class FactoryTestCase(unittest.TestCase):
 
     def test_factory_normal(self):
         unit = units_factory('unit', 1)
-        self.assertEqual(unit(0), ['0 unit'])
-        unit = units_factory('unit', 1, plural='units')
-        self.assertEqual(unit(0), ['0 units'])
-        self.assertEqual(unit(1), ['1 unit'])
+        self.assertEqual(unit(0), [('unit', 0)])
+        unit = units_factory('unit', 1, plural='unit')
+        self.assertEqual(unit(0), [('unit', 0)])
+        self.assertEqual(unit(1), [('unit', 1)])
 
     def test_factory_chained(self):
-        ten = units_factory('ten', 10, plural='tens')
-        unit = units_factory('unit', 1, higher_unit=ten, plural='units')
-        self.assertEqual(unit(0), ['0 units'])
-        self.assertEqual(unit(9), ['9 units'])
-        self.assertEqual(ten(9), ['0 tens'])
-        self.assertEqual(unit(10), ['1 ten'])
-        self.assertEqual(ten(10), ['1 ten'])
-        self.assertEqual(unit(11), ['1 ten', '1 unit'])
-        self.assertEqual(unit(20), ['2 tens'])
+        ten = units_factory('ten', 10, plural='ten')
+        unit = units_factory('unit', 1, higher_unit=ten, plural='unit')
+        self.assertEqual(unit(0), [('unit', 0)])
+        self.assertEqual(unit(9), [('unit', 9)])
+        self.assertEqual(ten(9), [('ten', 0)])
+        self.assertEqual(unit(10), [('ten', 1)])
+        self.assertEqual(ten(10), [('ten', 1)])
+        self.assertEqual(unit(11), [('ten', 1), ('unit', 1)])
+        self.assertEqual(unit(20), [('ten', 2)])
 
     def test_factory_base_omissible(self):
         # this really means blank value on empty.
         unit = units_factory('unit', 1, omissible=True)
         self.assertEqual(unit(0), [])
-        self.assertEqual(unit(1), ['1 unit'])
+        self.assertEqual(unit(1), [('unit', 1)])
         ten = units_factory('ten', 10, omissible=True)
         unit = units_factory('unit', 1, higher_unit=ten, omissible=True)
         self.assertEqual(ten(9), [])
-        self.assertEqual(ten(10), ['1 ten'])
+        self.assertEqual(ten(10), [('ten', 1)])
 
     def test_factory_higher_omissible(self):
         unit = units_factory('unit', 1, force_render=True)
-        self.assertEqual(unit(0), ['0 unit'])
-        self.assertEqual(unit(1), ['1 unit'])
+        self.assertEqual(unit(0), [('unit', 0)])
+        self.assertEqual(unit(1), [('unit', 1)])
         hundred = units_factory('hundred', 100, force_render=True)
         ten = units_factory('ten', 10, higher_unit=hundred,
             force_render=True)
         unit = units_factory('unit', 1, higher_unit=ten,
             force_render=True)
 
-        self.assertEqual(ten(9), ['0 hundred', '0 ten'])
-        self.assertEqual(unit(0), ['0 hundred', '0 ten', '0 unit'])
-        self.assertEqual(unit(9), ['0 hundred', '0 ten', '9 unit'])
+        self.assertEqual(ten(9), [('hundred', 0), ('ten', 0)])
+        self.assertEqual(unit(0), [('hundred', 0), ('ten', 0), ('unit', 0)])
+        self.assertEqual(unit(9), [('hundred', 0), ('ten', 0), ('unit', 9)])
 
-        self.assertEqual(unit(10), ['0 hundred', '1 ten', '0 unit'])
-        self.assertEqual(ten(10), ['0 hundred', '1 ten'])
+        self.assertEqual(unit(10), [('hundred', 0), ('ten', 1), ('unit', 0)])
+        self.assertEqual(ten(10), [('hundred', 0), ('ten', 1)])
 
     def test_factory_higher_irregular(self):
         gross = units_factory('gross', 144)
@@ -65,24 +65,24 @@ class FactoryTestCase(unittest.TestCase):
         ten = units_factory('ten', 10, higher_unit=dozen)
         unit = units_factory('unit', 1, higher_unit=ten)
 
-        self.assertEqual(unit(9), ['9 unit'])
-        self.assertEqual(unit(10), ['1 ten'])
-        self.assertEqual(unit(12), ['1 dozen'])
-        self.assertEqual(unit(23), ['1 dozen', '1 ten', '1 unit'])
-        self.assertEqual(unit(24), ['2 dozen'])
-        self.assertEqual(unit(26), ['2 dozen', '2 unit'])
-        self.assertEqual(unit(99), ['8 dozen', '3 unit'])
-        self.assertEqual(unit(100), ['1 hundred'])
-        self.assertEqual(unit(111), ['1 hundred', '1 ten', '1 unit'])
-        self.assertEqual(unit(112), ['1 hundred', '1 dozen'])
-        self.assertEqual(unit(143), ['1 hundred', '3 dozen', '7 unit'])
-        self.assertEqual(unit(144), ['1 gross'])
-        self.assertEqual(unit(150), ['1 gross', '6 unit'])
-        self.assertEqual(unit(155), ['1 gross', '1 ten', '1 unit'])
-        self.assertEqual(unit(156), ['1 gross', '1 dozen'])
+        self.assertEqual(unit(9), [('unit', 9)])
+        self.assertEqual(unit(10), [('ten', 1)])
+        self.assertEqual(unit(12), [('dozen', 1)])
+        self.assertEqual(unit(23), [('dozen', 1), ('ten', 1), ('unit', 1)])
+        self.assertEqual(unit(24), [('dozen', 2)])
+        self.assertEqual(unit(26), [('dozen', 2), ('unit', 2)])
+        self.assertEqual(unit(99), [('dozen', 8), ('unit', 3)])
+        self.assertEqual(unit(100), [('hundred', 1)])
+        self.assertEqual(unit(111), [('hundred', 1), ('ten', 1), ('unit', 1)])
+        self.assertEqual(unit(112), [('hundred', 1), ('dozen', 1)])
+        self.assertEqual(unit(143), [('hundred', 1), ('dozen', 3), ('unit', 7)])
+        self.assertEqual(unit(144), [('gross', 1)])
+        self.assertEqual(unit(150), [('gross', 1), ('unit', 6)])
+        self.assertEqual(unit(155), [('gross', 1), ('ten', 1), ('unit', 1)])
+        self.assertEqual(unit(156), [('gross', 1), ('dozen', 1)])
         self.assertEqual(unit(287),
-            ['1 gross', '1 hundred', '3 dozen', '7 unit'])
-        self.assertEqual(unit(288), ['2 gross'])
+            [('gross', 1), ('hundred', 1), ('dozen', 3), ('unit', 7)])
+        self.assertEqual(unit(288), [('gross', 2)])
 
 
 class UnitGroupTestCase(unittest.TestCase):
@@ -97,18 +97,18 @@ class UnitGroupTestCase(unittest.TestCase):
             'hour': 3600,
             'minute': 60,
         }
-        self.plurals = {'week': 'weeks', 'month': 'months'}
+        self.plurals = {'week': 'week', 'month': 'month'}
         self.plurals.update(_plurals)
 
     def test_construction(self):
         timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
             plurals=self.plurals,
         )
-        self.assertEqual(timeug.units['hour'](86461), ['1 day'])
-        self.assertEqual(timeug.units['hours'](90061), ['1 day', '1 hour'])
-        self.assertEqual(timeug.units['week'](90061), ['0 weeks'])
+        self.assertEqual(timeug.units['hour'](86461), [('day', 1)])
+        self.assertEqual(timeug.units['hour'](90061), [('day', 1), ('hour', 1)])
+        self.assertEqual(timeug.units['week'](90061), [('week', 0)])
         self.assertEqual(timeug.units['second'](1940464),
-            ['3 weeks', '1 day', '11 hours', '1 minute', '4 seconds'])
+            [('week', 3), ('day', 1), ('hour', 11), ('minute', 1), ('second', 4)])
 
     def test_construction_baseunit_redefinition_omitted(self):
         ug = UnitGroup(base_unit='second', ratios={
@@ -117,7 +117,7 @@ class UnitGroupTestCase(unittest.TestCase):
             },
             plurals=self.plurals,
         )
-        self.assertEqual(ug.units['second'](71), ['71 seconds'])
+        self.assertEqual(ug.units['second'](71), [('second', 71)])
 
         # To show the difference
         ug = UnitGroup(base_unit='nope', ratios={
@@ -126,7 +126,7 @@ class UnitGroupTestCase(unittest.TestCase):
             },
             plurals=self.plurals,
         )
-        self.assertEqual(ug.units['nope'](71), ['1 second', '11 nope'])
+        self.assertEqual(ug.units['nope'](71), [('second', 1), ('nope', 11)])
 
     def test_respecify_new_ratio(self):
         timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
@@ -134,21 +134,21 @@ class UnitGroupTestCase(unittest.TestCase):
         )
         # original
         self.assertEqual(timeug.units['second'](9954862),
-            ['16 weeks', '3 days', '5 hours', '14 minutes', '22 seconds'])
+            [('week', 16), ('day', 3), ('hour', 5), ('minute', 14), ('second', 22)])
         self.assertEqual(timeug.units['second'](2592000),
-            ['4 weeks', '2 days'])
+            [('week', 4), ('day', 2)])
         self.assertEqual(timeug.units['second'](3196800),
-            ['5 weeks', '2 days'])
+            [('week', 5), ('day', 2)])
         self.assertEqual(timeug.units['second'](7775940),
-            ['12 weeks', '5 days', '23 hours', '59 minutes'])
+            [('week', 12), ('day', 5), ('hour', 23), ('minute', 59)])
 
         monthug = timeug.respecify({'month': 2592000})
         self.assertEqual(monthug.units['second'](2592000),
-            ['1 month'])
+            [('month', 1)])
         self.assertEqual(monthug.units['second'](3196800),
-            ['1 month', '1 week'])
+            [('month', 1), ('week', 1)])
         self.assertEqual(monthug.units['second'](7775940),
-            ['2 months', '4 weeks', '1 day', '23 hours', '59 minutes'])
+            [('month', 2), ('week', 4), ('day', 1), ('hour', 23), ('minute', 59)])
 
     def test_respecify_new_ratio_keep(self):
         timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
@@ -157,9 +157,9 @@ class UnitGroupTestCase(unittest.TestCase):
         # can't filter base units out.
         monthug = timeug.respecify({'month': 2592000}, keep_only=['month'])
         self.assertEqual(monthug.units['second'](2592000),
-            ['1 month'])
+            [('month', 1)])
         self.assertEqual(monthug.units['second'](3196800),
-            ['1 month', '604800 seconds'])
+            [('month', 1), ('second', 604800)])
 
     def test_respecify_drop(self):
         timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
@@ -170,9 +170,9 @@ class UnitGroupTestCase(unittest.TestCase):
         self.assertEqual(sorted(monthug.ratios.keys()),
             ['day', 'hour', 'minute', 'month', 'second'])
         self.assertEqual(monthug.units['second'](2592000),
-            ['1 month'])
+            [('month', 1)])
         self.assertEqual(monthug.units['second'](3196801),
-            ['1 month', '7 days', '1 second'])
+            [('month', 1), ('day', 7), ('second', 1)])
 
     def test_respecify_new_ratio_and_drop(self):
         timeug = UnitGroup(base_unit='second', ratios=self.time_ratios,
@@ -183,7 +183,7 @@ class UnitGroupTestCase(unittest.TestCase):
             drop=['month'])
         self.assertEqual(sorted(monthug.ratios.keys()), ['second'])
         self.assertEqual(monthug.units['second'](2592000),
-            ['2592000 seconds'])
+            [('second', 2592000)])
 
 
 def test_suite():

@@ -43,8 +43,7 @@ def units_factory(subject, size, higher_unit=None, plural=None,
         derived = int(remainder / size)
         if (force_render or (value >= size and derived != 0) or
                 not (omissible or result)):
-            result.append('%d %s' % (derived,
-                derived == 1 and subject or plural))
+            result.append((subject, derived))
 
         if with_remainder:
             return result, remainder
