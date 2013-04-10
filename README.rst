@@ -1,6 +1,8 @@
 Introduction
 ============
 
+F3U1 - Factories and Functions for Fiddling with Units.
+
 Once upon a time, the quest for a method to format seconds into a human
 readable string was given to a hero.  Braving through the nets of Inter,
 our hero stumbled upon place after places, such as State of Active, the
@@ -47,21 +49,29 @@ solution was discovered, and it is one that transcends beyond time.
 What?
 =====
 
-F3U1 - Factory For Formatting Units.  Or Factory of Functions for
-Formatting Units.  Or Formatting Functions from Functions for Units.
-They all kind of work, doesn't really matter to me.
+This resulted in the creation of original F3U1 - Factory For Formatting
+Units.  Other descriptions used to fit, including Factory of Functions
+for Formatting Units or Formatting Functions from Functions for Units.
+However, over time as this module matured, it really became Factories
+and Functions for Fiddling with Units.
 
-This is a module for formatting units that provides methods to render
-most commonly found non-metric measurement units into a human readable
-string.  These functions are constructed in a way that minimizes calls
-to string formatting functions, and is constructed using a function that
-is generic to this specific use case.  The target is to cover the most
-basic cases in the name of simplicity, and leave the difficult/advanced
-cases to other libraries that might do the same thing.
+While this started as a module for formatting time into a human friendly
+string, this got generalized to be able to format arbitrary units, such
+as non-metric measurements units, into a human readable string.  Then
+this got further generalized into being callable objects that can be
+used to construct an object representing some value and then be casted
+into the same human readable string.
 
 How?
 ====
 
-Right now not much is really documented outside of the test cases, but
-to toy with this you can clone this repository, instantiate a
-virtualenv, and use pip to install with the requirements.txt.
+Just install with pip in your virtualenv setup.
+
+Alternatively you may clone this repository for running the tests, which
+will require some other dependencies which are specified inside the
+requirements.txt::
+
+    $ git clone git://github.com/metatoaster/mtj.f3u1.git
+    $ cd mtj.f3u1
+    $ pip install -r requirements.txt
+    $ python setup.py develop
