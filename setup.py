@@ -5,7 +5,7 @@ version = '0.1'
 
 setup(name='mtj.f3u1',
       version=version,
-      description="Factory For Formatting Units",
+      description="Factories and Functions for Fiddling with Units",
       long_description=open("README.rst").read() + "\n" +
                        open(os.path.join("mtj", "f3u1", "README.rst")).read() + "\n" +
                        open(os.path.join("docs", "HISTORY.rst")).read(),
