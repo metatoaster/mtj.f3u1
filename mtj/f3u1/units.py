@@ -19,16 +19,16 @@ Time = UnitGroup(base_unit='second', plurals=_plurals, ratios={
     'day': 86400,
     'hour': 3600,
     'minute': 60,
-}).as_attrs()
+})
 
 ImperialLength = UnitGroup(base_unit='inch', plurals=_plurals, ratios={
     'mile': 63360,
     'yard': 36,
     'foot': 12,
-}).as_attrs()
+})
 
 ImperialWeight = UnitGroup(base_unit='ounce', plurals=_plurals, ratios={
     'ton': 35840,
     'stone': 224,
     'pound': 16,
-}).as_attrs()
+})

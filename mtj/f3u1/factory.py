@@ -55,16 +55,6 @@ def unit_number_tuple_to_str(values, plurals=None):
         for s, v in values])
 
 
-class UnitGroupAttr(object):
-    def __init__(self, unit_group):
-        for k, v in unit_group.units.iteritems():
-            setattr(self, k, v)
-        self.__unit_group = unit_group
-
-    def __call__(self, *a, **kw):
-        return self.__unit_group(*a, **kw)
-
-
 class UnitGroup(object):
     """
     Instances of this class is constructed using a list of definitions
