@@ -2,7 +2,6 @@ from datetime import timedelta
 import unittest2 as unittest
 
 from mtj.f3u1.units import Time
-from mtj.f3u1.timedelta import format_timedelta
 
 
 class TimeUnitTestCase(unittest.TestCase):
@@ -10,96 +9,77 @@ class TimeUnitTestCase(unittest.TestCase):
     Unit tests for the original hour-based requirements.
     """
 
-    def assertJoinedEqual(self, first, second):
-        self.assertEqual(', '.join(first), second)
-
     def test_zeros(self):
-        self.assertJoinedEqual(Time.second(0), '0 seconds')
-        self.assertJoinedEqual(Time.seconds(0), '0 seconds')
-        self.assertJoinedEqual(Time.minute(0), '0 minutes')
-        self.assertJoinedEqual(Time.minutes(0), '0 minutes')
-        self.assertJoinedEqual(Time.hour(0), '0 hours')
-        self.assertJoinedEqual(Time.hours(0), '0 hours')
-        self.assertJoinedEqual(Time.day(0), '0 days')
-        self.assertJoinedEqual(Time.days(0), '0 days')
+        self.assertEqual(Time.second(0), [('second', 0)])
+        self.assertEqual(Time.second(0), [('second', 0)])
+        self.assertEqual(Time.minute(0), [('minute', 0)])
+        self.assertEqual(Time.minute(0), [('minute', 0)])
+        self.assertEqual(Time.hour(0), [('hour', 0)])
+        self.assertEqual(Time.hour(0), [('hour', 0)])
+        self.assertEqual(Time.day(0), [('day', 0)])
+        self.assertEqual(Time.day(0), [('day', 0)])
         # Duplicates abound but whatever.
 
     def test_singular(self):
-        self.assertJoinedEqual(Time.second(1), '1 second')
-        self.assertJoinedEqual(Time.seconds(1), '1 second')
+        self.assertEqual(Time.second(1), [('second', 1)])
+        self.assertEqual(Time.second(1), [('second', 1)])
 
     def test_plural(self):
-        self.assertJoinedEqual(Time.second(2), '2 seconds')
+        self.assertEqual(Time.second(2), [('second', 2)])
 
     def test_almost_next(self):
-        self.assertJoinedEqual(Time.second(59), '59 seconds')
-        self.assertJoinedEqual(Time.minute(59), '0 minutes')
+        self.assertEqual(Time.second(59), [('second', 59)])
+        self.assertEqual(Time.minute(59), [('minute', 0)])
 
     def test_minute(self):
-        self.assertJoinedEqual(Time.second(60), '1 minute')
-        self.assertJoinedEqual(Time.minute(60), '1 minute')
+        self.assertEqual(Time.second(60), [('minute', 1)])
+        self.assertEqual(Time.minute(60), [('minute', 1)])
 
     def test_minute_plusone(self):
-        self.assertJoinedEqual(Time.second(61), '1 minute, 1 second')
-        self.assertJoinedEqual(Time.minute(61), '1 minute')
+        self.assertEqual(Time.second(61), [('minute', 1), ('second', 1)])
+        self.assertEqual(Time.minute(61), [('minute', 1)])
 
     def test_day_minusone(self):
-        self.assertJoinedEqual(Time.second(86399),
-            '23 hours, 59 minutes, 59 seconds')
-        self.assertJoinedEqual(Time.minute(86399), '23 hours, 59 minutes')
-        self.assertJoinedEqual(Time.hour(86399), '23 hours')
-        self.assertJoinedEqual(Time.day(86399), '0 days')
+        self.assertEqual(Time.second(86399),
+            [('hour', 23), ('minute', 59), ('second', 59)])
+        self.assertEqual(Time.minute(86399), [('hour', 23), ('minute', 59)])
+        self.assertEqual(Time.hour(86399), [('hour', 23)])
+        self.assertEqual(Time.day(86399), [('day', 0)])
 
     def test_day(self):
-        self.assertJoinedEqual(Time.second(86400), '1 day')
-        self.assertJoinedEqual(Time.minute(86400), '1 day')
-        self.assertJoinedEqual(Time.hour(86400), '1 day')
-        self.assertJoinedEqual(Time.day(86400), '1 day')
+        self.assertEqual(Time.second(86400), [('day', 1)])
+        self.assertEqual(Time.minute(86400), [('day', 1)])
+        self.assertEqual(Time.hour(86400), [('day', 1)])
+        self.assertEqual(Time.day(86400), [('day', 1)])
 
     def test_day_pluseone(self):
-        self.assertJoinedEqual(Time.second(86401), '1 day, 1 second')
-        self.assertJoinedEqual(Time.minute(86401), '1 day')
-        self.assertJoinedEqual(Time.hour(86401), '1 day')
-        self.assertJoinedEqual(Time.day(86401), '1 day')
+        self.assertEqual(Time.second(86401), [('day', 1), ('second', 1)])
+        self.assertEqual(Time.minute(86401), [('day', 1)])
+        self.assertEqual(Time.hour(86401), [('day', 1)])
+        self.assertEqual(Time.day(86401), [('day', 1)])
 
     def test_day_pluseoneminute(self):
-        self.assertJoinedEqual(Time.second(86460), '1 day, 1 minute')
-        self.assertJoinedEqual(Time.minute(86460), '1 day, 1 minute')
-        self.assertJoinedEqual(Time.hour(86460), '1 day')
-        self.assertJoinedEqual(Time.day(86460), '1 day')
+        self.assertEqual(Time.second(86460), [('day', 1), ('minute', 1)])
+        self.assertEqual(Time.minute(86460), [('day', 1), ('minute', 1)])
+        self.assertEqual(Time.hour(86460), [('day', 1)])
+        self.assertEqual(Time.day(86460), [('day', 1)])
 
     def test_day_pluseonehour(self):
-        self.assertJoinedEqual(Time.second(90000), '1 day, 1 hour')
-        self.assertJoinedEqual(Time.minute(90000), '1 day, 1 hour')
-        self.assertJoinedEqual(Time.hour(90000), '1 day, 1 hour')
-        self.assertJoinedEqual(Time.day(90000), '1 day')
+        self.assertEqual(Time.second(90000), [('day', 1), ('hour', 1)])
+        self.assertEqual(Time.minute(90000), [('day', 1), ('hour', 1)])
+        self.assertEqual(Time.hour(90000), [('day', 1), ('hour', 1)])
+        self.assertEqual(Time.day(90000), [('day', 1)])
 
     def test_more(self):
-        self.assertJoinedEqual(Time.second(901101),
-            '10 days, 10 hours, 18 minutes, 21 seconds')
-        self.assertJoinedEqual(Time.minute(901101),
-            '10 days, 10 hours, 18 minutes')
-        self.assertJoinedEqual(Time.hour(901101), '10 days, 10 hours')
-        self.assertJoinedEqual(Time.day(901101), '10 days')
-
-
-class FormatTimedeltaTestCase(unittest.TestCase):
-    """
-    Unit tests for the original format_timedelta method.
-
-    Just really to show that the string based acquisition works.
-    """
-
-    def test_nothing(self):
-        self.assertEqual(format_timedelta(seconds=0), '0 seconds')
-
-    def test_hour(self):
-        self.assertEqual(format_timedelta(seconds=180061, resolution='hour'),
-            '2 days, 2 hours')
+        self.assertEqual(Time.second(901101),
+            [('day', 10), ('hour', 10), ('minute', 18), ('second', 21)])
+        self.assertEqual(Time.minute(901101),
+            [('day', 10), ('hour', 10), ('minute', 18)])
+        self.assertEqual(Time.hour(901101), [('day', 10), ('hour', 10)])
+        self.assertEqual(Time.day(901101), [('day', 10)])
 
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TimeUnitTestCase))
-    suite.addTest(unittest.makeSuite(FormatTimedeltaTestCase))
     return suite

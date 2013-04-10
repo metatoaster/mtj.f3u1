@@ -2,7 +2,6 @@ from datetime import timedelta
 import unittest2 as unittest
 
 from mtj.f3u1.units import ImperialLength, ImperialWeight
-from mtj.f3u1.timedelta import format_timedelta
 
 
 class ImperialUnitsTestCase(unittest.TestCase):
