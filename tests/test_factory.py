@@ -1,7 +1,8 @@
 from datetime import timedelta
 import unittest2 as unittest
 
-from mtj.f3u1.factory import units_factory, UnitGroup
+from mtj.f3u1.factory import units_factory, unit_number_tuple_to_str
+from mtj.f3u1.factory import UnitGroup
 
 
 class FactoryTestCase(unittest.TestCase):
@@ -165,8 +166,26 @@ class UnitGroupTestCase(unittest.TestCase):
             [('second', 2592000)])
 
 
+class FormatUnitNumbers(unittest.TestCase):
+
+    def test_format(self):
+        self.assertEqual('1 unit',
+            unit_number_tuple_to_str([('unit', 1)], {'unit': 'units'}))
+        self.assertEqual('2 units',
+            unit_number_tuple_to_str([('unit', 2)], {'unit': 'units'}))
+        self.assertEqual('3 unit',
+            unit_number_tuple_to_str([('unit', 3)], None))
+        self.assertEqual('1 ten, 1 unit',
+            unit_number_tuple_to_str([('ten', 1), ('unit', 1)],
+                {'unit': 'units', 'ten': 'tens'}))
+        self.assertEqual('2 ten, 2 units',
+            unit_number_tuple_to_str([('ten', 2), ('unit', 2)],
+                {'unit': 'units'}))
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(FactoryTestCase))
+    suite.addTest(unittest.makeSuite(FormatUnitNumbers))
     suite.addTest(unittest.makeSuite(UnitGroupTestCase))
     return suite

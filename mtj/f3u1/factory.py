@@ -48,11 +48,21 @@ def units_factory(subject, size, higher_unit=None,
     unit_method.size = size
     return unit_method
 
+def unit_number_tuple_to_str(values, plurals=None):
+    if plurals is None:
+        plurals = {}
+    return ', '.join([('%d %s' % (v, v == 1 and s or plurals.get(s, s)))
+        for s, v in values])
+
 
 class UnitGroupAttr(object):
     def __init__(self, unit_group):
         for k, v in unit_group.units.iteritems():
             setattr(self, k, v)
+        self.__unit_group = unit_group
+
+    def __call__(self, *a, **kw):
+        return self.__unit_group(*a, **kw)
 
 
 class UnitGroup(object):
@@ -128,7 +138,40 @@ class UnitGroup(object):
     def as_attrs(self):
         return UnitGroupAttr(self)
 
-    # TODO make this callable, or heck, another factory that will return
-    # an object that will let user have a more friendlier way to
-    # fine-tune their desired input (specifying all the units) and then
-    # control the output to be some kind of string.
+    def __call__(self, *a, **kw):
+        """
+        Helper constructor for an instance of a value class.
+
+        Normal arguments (non-keywords) are in this order:
+
+        resolution
+
+        Please refer to the base value class for the definitions of the
+        above arguments.
+        """
+
+        args = list(reversed(a))
+        resolution = args and args.pop() or self.base_unit
+        # For now, just return the value in base units.
+        value = 0
+        for k, v in kw.iteritems():
+            ratio = self.units.get(k, None)
+            if ratio is None:
+                raise TypeError("got an unexpected keyword argument '%s'" % k)
+            value = value + self.ratios.get(k, 0) * v
+        return UnitValue(self, value, resolution)
+
+
+class UnitValue(object):
+
+    def __init__(self, unit_group, value, resolution=None):
+        # Assuming the UnitGroups are immutable.
+        assert resolution in unit_group.units.keys()
+        self.value = value
+        self.unit_group = unit_group
+        self.resolution = resolution
+
+    def __str__(self):
+        units = self.unit_group.units.get(self.resolution)
+        values = units(self.value)
+        return unit_number_tuple_to_str(values, self.unit_group.plurals)

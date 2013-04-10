@@ -79,7 +79,39 @@ class TimeUnitTestCase(unittest.TestCase):
         self.assertEqual(Time.day(901101), [('day', 10)])
 
 
+class TimeConstructionTestCase(unittest.TestCase):
+    """
+    Unit tests for having a constructed Time unit.
+
+    This essentially tests the implementation of the encapsulated
+    UnitValue class.
+    """
+
+    def test_basic(self):
+        self.assertEqual(str(Time()), '0 seconds')
+        self.assertEqual(str(Time(second=1)), '1 second')
+        self.assertEqual(str(Time(second=2)), '2 seconds')
+        self.assertEqual(str(Time(minute=0)), '0 seconds')
+        self.assertEqual(str(Time(minute=1)), '1 minute')
+        self.assertEqual(str(Time(minute=2)), '2 minutes')
+        self.assertEqual(str(Time(minute=2, second=2)), '2 minutes, 2 seconds')
+        self.assertEqual(str(Time(second=122)), '2 minutes, 2 seconds')
+        self.assertEqual(str(Time(day=2, second=2)), '2 days, 2 seconds')
+        self.assertEqual(str(Time(second=262803)), '3 days, 1 hour, 3 seconds')
+
+    def test_resolution(self):
+        self.assertEqual(str(Time('hour')), '0 hours')
+        self.assertEqual(str(Time('hour', second=1)), '0 hours')
+        self.assertEqual(str(Time('hour', second=2)), '0 hours')
+        self.assertEqual(str(Time('hour', minute=0)), '0 hours')
+        self.assertEqual(str(Time('hour', minute=1)), '0 hours')
+        self.assertEqual(str(Time('hour', minute=2)), '0 hours')
+        self.assertEqual(str(Time('hour', day=2, second=2)), '2 days')
+        self.assertEqual(str(Time('hour', second=262803)), '3 days, 1 hour')
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TimeUnitTestCase))
+    suite.addTest(unittest.makeSuite(TimeConstructionTestCase))
     return suite
