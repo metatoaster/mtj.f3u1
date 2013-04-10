@@ -3,6 +3,9 @@ Introduction
 
 F3U1 - Factories and Functions for Fiddling with Units.
 
+Backstory
+---------
+
 Once upon a time, the quest for a method to format seconds into a human
 readable string was given to a hero.  Braving through the nets of Inter,
 our hero stumbled upon place after places, such as State of Active, the

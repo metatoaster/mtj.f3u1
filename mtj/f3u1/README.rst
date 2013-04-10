@@ -43,4 +43,5 @@ plural form::
     9 weeks, 6 days, 11 hours, 39 minutes
 
 Note: currently the values are all limited to positive integers.  This
-may change to be more inclusive in the future.
+may change to be more inclusive in the future.  Maybe if I go insane I
+might add a full blown units conversion and mathematics into here.
