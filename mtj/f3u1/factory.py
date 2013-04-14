@@ -48,10 +48,10 @@ def units_factory(subject, size, higher_unit=None,
     unit_method.size = size
     return unit_method
 
-def unit_number_tuple_to_str(values, plurals=None):
+def unit_number_tuple_to_str(values, plurals=None, divider=', '):
     if plurals is None:
         plurals = {}
-    return ', '.join([('%d %s' % (v, v == 1 and s or plurals.get(s, s)))
+    return divider.join([('%d %s' % (v, v == 1 and s or plurals.get(s, s)))
         for s, v in values])
 
 
