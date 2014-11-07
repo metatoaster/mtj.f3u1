@@ -1,5 +1,5 @@
 from datetime import timedelta
-import unittest2 as unittest
+import unittest
 
 from mtj.f3u1.units import ImperialLength, ImperialWeight
 

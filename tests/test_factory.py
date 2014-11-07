@@ -1,5 +1,5 @@
 from datetime import timedelta
-import unittest2 as unittest
+import unittest
 
 from mtj.f3u1.factory import units_factory, unit_number_tuple_to_str
 from mtj.f3u1.factory import UnitGroup

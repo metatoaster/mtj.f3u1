@@ -1,4 +1,11 @@
-from sys import maxint
+import sys
+from operator import itemgetter
+
+try:
+    from sys import maxsize as maxint
+except ImportError:
+    from sys import maxint
+
 
 def units_factory(subject, size, higher_unit=None,
         omissible=False, force_render=False):
@@ -80,7 +87,7 @@ class UnitGroup(object):
 
     def initialize(self):
         self.units = {}
-        build = sorted(self.ratios.items(), cmp=lambda x, y: cmp(y[1], x[1]))
+        build = sorted(self.ratios.items(), key=itemgetter(1), reverse=True)
 
         last = None
         for subject, size in build:
@@ -114,7 +121,7 @@ class UnitGroup(object):
         new_plurals = newdict(self.plurals, plurals)
 
         if keep_only:
-            keys = new_ratios.keys()
+            keys = list(new_ratios.keys())
             for k in keys:
                 if k not in keep_only:
                     new_ratios.pop(k, None)
@@ -144,7 +151,7 @@ class UnitGroup(object):
         resolution = args and args.pop() or self.base_unit
         # For now, just return the value in base units.
         value = 0
-        for k, v in kw.iteritems():
+        for k, v in kw.items():
             ratio = self.units.get(k, None)
             if ratio is None:
                 raise TypeError("got an unexpected keyword argument '%s'" % k)
