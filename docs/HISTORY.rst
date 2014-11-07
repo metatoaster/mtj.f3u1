@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2 - 2014-11-07
+----------------
+
+* Python 3 compatibility.
+* Allow specification of the divider between elements.
+
 0.1 - 2013-04-10
 ----------------
 
